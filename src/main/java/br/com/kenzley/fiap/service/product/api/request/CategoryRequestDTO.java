@@ -1,0 +1,13 @@
+package br.com.kenzley.fiap.service.product.api.request;
+
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@EqualsAndHashCode
+public class CategoryRequestDTO {
+    private String name;
+}
