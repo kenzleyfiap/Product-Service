@@ -1,4 +1,4 @@
-package br.com.kenzley.fiap.service.product.infraescruture.entity;
+package br.com.kenzley.fiap.service.product.infrastructure.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

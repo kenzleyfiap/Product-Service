@@ -1,7 +1,7 @@
 package br.com.kenzley.fiap.service.product.business;
 
-import br.com.kenzley.fiap.service.product.infraescruture.entity.CategoryEntity;
-import br.com.kenzley.fiap.service.product.infraescruture.repository.CategoryRepository;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.CategoryEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,5 +13,13 @@ public class CategoryService {
 
     public CategoryEntity saveCategory(CategoryEntity categoryEntity) {
         return categoryRepository.save(categoryEntity);
+    }
+
+    public CategoryEntity findByProductId(String productId) {
+        return categoryRepository.findByProductId(productId);
+    }
+
+    public void deleteByProductId(String productId) {
+        categoryRepository.deleteByProductId(productId);
     }
 }

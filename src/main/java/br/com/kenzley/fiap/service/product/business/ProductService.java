@@ -4,11 +4,14 @@ import br.com.kenzley.fiap.service.product.api.converter.ProductConverter;
 import br.com.kenzley.fiap.service.product.api.converter.ProductMapper;
 import br.com.kenzley.fiap.service.product.api.request.ProductRequestDTO;
 import br.com.kenzley.fiap.service.product.api.response.ProductResponseDTO;
-import br.com.kenzley.fiap.service.product.infraescruture.entity.ProductEntity;
-import br.com.kenzley.fiap.service.product.infraescruture.exceptions.BusinessException;
-import br.com.kenzley.fiap.service.product.infraescruture.repository.ProductRepository;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.CategoryEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.ProductEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.exceptions.BusinessException;
+import br.com.kenzley.fiap.service.product.infrastructure.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static org.springframework.util.Assert.notNull;
 
@@ -39,4 +42,35 @@ public class ProductService {
         }
     }
 
+    public List<ProductResponseDTO> findAll() {
+        List<ProductEntity> products = productRepository.findAll();
+
+        return products.stream()
+                .map(product -> {
+                    CategoryEntity category = categoryService.findByProductId(product.getId());
+                    return productMapper.toProductResponseDTO(product, category);
+                })
+                .toList();
+    }
+
+    public ProductResponseDTO findById(String id) {
+        var product = productRepository.findById(id).orElseThrow(() -> new BusinessException("Product not found"));
+        var category = categoryService.findByProductId(product.getId());
+        return productMapper.toProductResponseDTO(product, category);
+    }
+
+    public ProductResponseDTO updateById(String id, ProductRequestDTO productRequestDTO) {
+        findById(id);
+        var productEntity = productConverter.toProductEntity(productRequestDTO);
+        var category = categoryService.findByProductId(id);
+        productEntity.setId(id);
+
+        return productMapper.toProductResponseDTO(productRepository.save(productEntity), category);
+    }
+
+    public void deleteById(String id) {
+        findById(id);
+        productRepository.deleteById(id);
+        categoryService.deleteByProductId(id);
+    }
 }

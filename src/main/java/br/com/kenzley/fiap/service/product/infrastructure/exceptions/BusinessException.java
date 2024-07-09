@@ -1,4 +1,4 @@
-package br.com.kenzley.fiap.service.product.infraescruture.exceptions;
+package br.com.kenzley.fiap.service.product.infrastructure.exceptions;
 
 public class BusinessException extends RuntimeException{
     private static final long servialVersionUID = 1L;

@@ -2,8 +2,8 @@ package br.com.kenzley.fiap.service.product.api.converter;
 
 import br.com.kenzley.fiap.service.product.api.request.CategoryRequestDTO;
 import br.com.kenzley.fiap.service.product.api.request.ProductRequestDTO;
-import br.com.kenzley.fiap.service.product.infraescruture.entity.CategoryEntity;
-import br.com.kenzley.fiap.service.product.infraescruture.entity.ProductEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.CategoryEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.ProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

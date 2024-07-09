@@ -1,8 +1,8 @@
 package br.com.kenzley.fiap.service.product.api.converter;
 
 import br.com.kenzley.fiap.service.product.api.response.ProductResponseDTO;
-import br.com.kenzley.fiap.service.product.infraescruture.entity.CategoryEntity;
-import br.com.kenzley.fiap.service.product.infraescruture.entity.ProductEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.CategoryEntity;
+import br.com.kenzley.fiap.service.product.infrastructure.entity.ProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
