@@ -7,6 +7,7 @@ import br.com.kenzley.fiap.service.product.api.response.ProductResponseDTO;
 import br.com.kenzley.fiap.service.product.infrastructure.entity.CategoryEntity;
 import br.com.kenzley.fiap.service.product.infrastructure.entity.ProductEntity;
 import br.com.kenzley.fiap.service.product.infrastructure.exceptions.BusinessException;
+import br.com.kenzley.fiap.service.product.infrastructure.exceptions.ProductNotFoundException;
 import br.com.kenzley.fiap.service.product.infrastructure.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class ProductService {
     }
 
     public ProductResponseDTO findById(String id) {
-        var product = productRepository.findById(id).orElseThrow(() -> new BusinessException("Product not found"));
+        var product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found"));
         var category = categoryService.findByProductId(product.getId());
         return productMapper.toProductResponseDTO(product, category);
     }
