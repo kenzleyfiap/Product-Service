@@ -188,33 +188,44 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.1.2</version>
+					<configuration>
+						<includes>
+							<include>**/*Test.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/bdd/**</exclude>
+						</excludes>
+						<properties>
+							<junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+						</properties>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-
-					<properties>
-						<junit.jupiter.extesions.autodetection.enabled>true</junit.jupiter.extesions.autodetection.enabled>
-					</properties>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -257,9 +268,9 @@
 						<version>3.1.2</version>
 						<configuration>
 							<includes combine.self="override">
-								<include>**/CucumberIntegrationTest.java/</include>
+								<include>**/bdd/**</include>
 							</includes>
-							<excludes>
+							<excludes combine.self="override">
 								<exclude>**/api/**</exclude>
 								<exclude>**/business/**</exclude>
 								<exclude>**/infrastructure/**</exclude>
