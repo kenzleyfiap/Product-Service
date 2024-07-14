@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.kenzley.fiap.service</groupId>
 	<artifactId>product</artifactId>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>product</name>
 	<description>Serviço responsável por operacionalizar os produtos(lanches)</description>
 

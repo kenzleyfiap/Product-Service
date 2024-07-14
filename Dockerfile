@@ -1,15 +1,7 @@
-FROM maven:3.8.5-openjdk-17 as build
-WORKDIR /build
-
-COPY . .
-
-RUN mvn clean package
-
-# Final app
-FROM openjdk:17-jdk-alpine
-
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-COPY --from=build /build/target/*.jar app.jar
+
+COPY target/product-1.0.0.jar product-1.0.0.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+CMD ["java","-jar","product-1.0.0.jar"]
