@@ -2,7 +2,7 @@ name: Deploy Service Product
 
 on:
     push:
-        branches: [develop]
+        branches: [main]
 
 jobs:
     build:
