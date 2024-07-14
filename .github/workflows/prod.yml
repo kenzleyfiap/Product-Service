@@ -21,7 +21,7 @@ jobs:
               run: mvn clean install
 
             - name: SonarCloud Scan
-              run: mvn -B clean verify -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+              run: mvn -B clean verify -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
             - name: Login Docker Hub
               run: docker login -u ${{secrets.DOCKER_LOGIN}} -p ${{secrets.DOCKER_PASSWORD}}
