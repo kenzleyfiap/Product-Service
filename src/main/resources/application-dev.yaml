@@ -4,8 +4,3 @@ spring:
       host: localhost
       port: 27017
       database: product
-
-logging:
-  level:
-    root: ERROR
-    org.springframework: ERROR
