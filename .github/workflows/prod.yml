@@ -27,6 +27,15 @@ jobs:
               run: docker login -u ${{secrets.DOCKER_LOGIN}} -p ${{secrets.DOCKER_PASSWORD}}
 
             - name: Build docker image
-              run: docker build -t luankenzley/product-service .
+              run: docker build -t luankenzley/product-service --build-arg HOST_MONGO=${{secrets.HOST_MONGO}} --build-arg DATABASE_NAME_MONGO=${{secrets.DATABASE_NAME_MONGO}} .
             - name: Push image docker
               run: docker push luankenzley/product-service
+
+    deploy:
+        needs: build
+        runs-on: self-hosted
+        steps:
+            - name: Pull image from docker hub
+              run: docker pull luankenzley/product-service:latest
+            - name: Run docker container
+              run: docker run -d -p 8080:8080 --name deploy_product-service luankenzley/product-service
