@@ -7,6 +7,9 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            HOST_MONGO: ${{secrets.HOST_MONGO}}
+            DATABASE_NAME_MONGO: ${{secrets.DATABASE_NAME_MONGO}}
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -27,7 +30,7 @@ jobs:
               run: docker login -u ${{secrets.DOCKER_LOGIN}} -p ${{secrets.DOCKER_PASSWORD}}
 
             - name: Build docker image
-              run: docker build -t luankenzley/product-service --build-arg HOST_MONGO=${{secrets.HOST_MONGO}} --build-arg DATABASE_NAME_MONGO=${{secrets.DATABASE_NAME_MONGO}} .
+              run: docker build -t luankenzley/product-service .
             - name: Push image docker
               run: docker push luankenzley/product-service
 
