@@ -27,7 +27,7 @@ jobs:
               run: docker login -u ${{secrets.DOCKER_LOGIN}} -p ${{secrets.DOCKER_PASSWORD}}
 
             - name: Build docker image
-              run: docker build -t luankenzley/product-service .
+              run: docker build -t luankenzley/product-service --build-arg HOST_MONGO=${{secrets.HOST_MONGO}} --build-arg DATABASE_NAME_MONGO=${{secrets.DATABASE_NAME_MONGO}} .
             - name: Push image docker
               run: docker push luankenzley/product-service
 
