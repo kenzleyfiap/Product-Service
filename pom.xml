@@ -10,25 +10,26 @@
 	</parent>
 	<groupId>br.com.kenzley.fiap.service</groupId>
 	<artifactId>product</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>product</name>
 	<description>Serviço responsável por operacionalizar os produtos(lanches)</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+
 	<properties>
 		<java.version>17</java.version>
+		<jacoco.version>0.8.12</jacoco.version>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.language>java</sonar.language>
+		<sonar.coverage.exclusions>
+			**/api/**/*.java,
+			**/config/**/*.java,
+			**/infrastructure/entity/*.java,
+			**/infrastructure/exceptions/*.java,
+			**/infrastructure/exceptions/handler/*.java,
+		</sonar.coverage.exclusions>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,6 +61,10 @@
 				<exclusion>
 					<artifactId>junit-jupiter-engine</artifactId>
 					<groupId>org.junit.jupiter</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -94,7 +99,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -119,18 +123,24 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- banco de dados -->
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>4.15.0</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-io</artifactId>
+					<groupId>commons-io</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Test api rest -->
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
-			<version>5.3.0</version>
+			<version>5.4.0</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -168,41 +178,248 @@
 			<version>2.27.0</version>
 		</dependency>
 
+		<!-- Integration Test -->
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>7.14.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>7.14.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-spring</artifactId>
+			<version>7.14.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine -->
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- sonar -->
+
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>${jacoco.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>plexus-utils</artifactId>
+					<groupId>org.codehaus.plexus</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.1.2</version>
+					<configuration>
+						<includes>
+							<include>**/*Test.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/bdd/**</exclude>
+						</excludes>
+						<properties>
+							<junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+						</properties>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+<!--			<plugin>-->
+<!--				<groupId>org.sonarsource.scanner.maven</groupId>-->
+<!--				<artifactId>sonar-maven-plugin</artifactId>-->
+<!--				<version>4.0.0.4121</version>-->
+<!--			</plugin>-->
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/bdd/**</exclude>
-					</excludes>
-					<properties>
-						<junit.jupiter.extesions.autodetection.enabled>true</junit.jupiter.extesions.autodetection.enabled>
-					</properties>
-				</configuration>
-			</plugin>
+
+<!--			<plugin>-->
+<!--				<groupId>org.jacoco</groupId>-->
+<!--				<artifactId>jacoco-maven-plugin</artifactId>-->
+<!--				<version>${jacoco.version}</version>-->
+<!--				<configuration>-->
+<!--					<output>file</output>-->
+<!--					<append>true</append>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>default-prepare-agent</id>-->
+<!--						<goals>-->
+<!--							<goal>prepare-agent</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>jacoco-report</id>-->
+<!--						<phase>test</phase>-->
+<!--						<goals>-->
+<!--							<goal>report</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+
+<!--			<plugin>-->
+
+<!--				<groupId>org.sonarsource.scanner.maven</groupId>-->
+<!--				<artifactId>sonar-maven-plugin</artifactId>-->
+<!--				<version>4.0.0.4121</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>verify</phase>-->
+<!--						<goals>-->
+<!--							<goal>sonar</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
+
 	</build>
+
+	<profiles>
+		<profile>
+			<id>integration-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.1.2</version>
+						<configuration>
+							<includes>
+								<include>**/*IT.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/*Test.java</exclude>
+							</excludes>
+							<properties>
+								<configurationParameters>
+									cucumber.junit-platform.naming-strategy=long
+								</configurationParameters>
+							</properties>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>system-test</id>
+			<build>
+				<pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.1.2</version>
+						<configuration>
+							<includes combine.self="override">
+								<include>**/bdd/**</include>
+							</includes>
+							<excludes combine.self="override">
+								<exclude>**/api/**</exclude>
+								<exclude>**/business/**</exclude>
+								<exclude>**/infrastructure/**</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+		<profile>
+			<id>coverage</id>
+			<properties>
+				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.5</version>
+						<executions>
+							<execution>
+								<id>prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>report</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

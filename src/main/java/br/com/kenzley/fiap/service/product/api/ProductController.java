@@ -4,26 +4,30 @@ import br.com.kenzley.fiap.service.product.api.request.ProductRequestDTO;
 import br.com.kenzley.fiap.service.product.api.response.ProductResponseDTO;
 import br.com.kenzley.fiap.service.product.business.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping()
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ProductResponseDTO> engraveProducts(@RequestBody ProductRequestDTO productRequestDTO) {
         return ResponseEntity.ok(productService.engraveProducts(productRequestDTO));
     }
 
-    @GetMapping
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<List<ProductResponseDTO>> findAllProducts() {
         return ResponseEntity.ok(productService.findAll());
     }
@@ -33,7 +37,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.findById(id));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<ProductResponseDTO> updateProductById(@PathVariable String id,
                                                                 @RequestBody ProductRequestDTO productRequestDTO) {
         return ResponseEntity.ok(productService.updateById(id, productRequestDTO));

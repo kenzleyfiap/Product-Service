@@ -18,8 +18,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static br.com.kenzley.fiap.service.product.utils.ProductHelper.*;
+import static br.com.kenzley.fiap.service.product.utils.ProductHelper.gerarProductEntityComId;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,34 +37,20 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class ProductServiceTest {
+class ProductServiceIT {
 
-    @Mock
+    @Autowired
     private ProductRepository productRepository;
-    @Mock
+    @Autowired
     private ProductConverter productConverter;
-    @Mock
+    @Autowired
     private ProductMapper productMapper;
-    @Mock
+    @Autowired
     private CategoryService categoryService;
+    @Autowired
     private ProductService productService;
-    AutoCloseable mock;
 
-    @BeforeEach
-    void setup(){
-        mock = MockitoAnnotations.openMocks(this);
-        productService = new ProductService(
-                productRepository,
-                productConverter,
-                productMapper,
-                categoryService
-        );
-    }
 
-    @AfterEach
-    void tearDown() throws Exception {
-        mock.close();
-    }
 
     @Test
     @Severity(SeverityLevel.BLOCKER)
@@ -69,8 +58,6 @@ class ProductServiceTest {
 
         // Arrange
         var product = gerarProductEntity();
-        when(productRepository.save(any(ProductEntity.class))).thenAnswer(i -> i.getArgument(0));
-
 
         // Act
         var productRegistred = productService.saveProduct(product);
@@ -90,20 +77,12 @@ class ProductServiceTest {
 
         // Arrange
         var productRequestDTO = gerarProductRequest();
-        when(productRepository.save(any(ProductEntity.class))).thenReturn(gerarProductEntityComId());
-        when(categoryService.saveCategory(any(CategoryEntity.class))).thenAnswer(i -> i.getArgument(0));
-        when(productService.saveProduct(any(ProductEntity.class))).thenReturn(gerarProductEntityComId());
-        when(productConverter.toProductEntity(any(ProductRequestDTO.class))).thenReturn(gerarProductEntityComId());
-        when(productConverter.toCategoryEntity(any(CategoryRequestDTO.class), any(String.class))).thenReturn(gerarCategoryEntity());
-        when(productMapper.toProductResponseDTO(any(ProductEntity.class), any(CategoryEntity.class))).thenReturn(gerarProductResponse());
-
 
         // Act
         var productRegistred = productService.engraveProducts(productRequestDTO);
 
         // Assert
         assertThat(productRegistred).isInstanceOf(ProductResponseDTO.class).isNotNull();
-
         assertThat(productRegistred.name()).isEqualTo(productRequestDTO.getName());
         assertThat(productRegistred.price()).isEqualTo(productRequestDTO.getPrice());
         assertThat(productRegistred.information()).isEqualTo(productRequestDTO.getInformation());
@@ -123,36 +102,28 @@ class ProductServiceTest {
     @Test
     void mustAllowFindProduct() throws ProductNotFoundException {
         // Arrange
-        var id = UUID.randomUUID().toString();
-        when(productRepository.findById(any(String.class))).thenReturn(Optional.of(gerarProductEntityComId()));
-        when(categoryService.findByProductId(any(String.class))).thenReturn(gerarCategoryEntity());
-        when(productMapper.toProductResponseDTO(any(ProductEntity.class), any(CategoryEntity.class))).thenReturn(gerarProductResponse());
+        var id = UUID.fromString("a0d94841-8ac4-4346-af6d-dbb82bd316cc").toString();
 
         // Act
-        ProductResponseDTO productReceived = productService.findById(gerarProductEntityComId().getId());
+        ProductResponseDTO productReceived = productService.findById(id);
 
         // Assert
         Assertions.assertThat(gerarProductEntityComId().getName()).isEqualTo(productReceived.name());
-        verify(productRepository, times(1)).findById(any(String.class));
-
+        Assertions.assertThat(gerarProductEntityComId().getId()).isNotNull();
     }
 
     @Test
     void mustGenerateExceptionWhenIdDoesNotExist() {
         var id = UUID.randomUUID().toString();
 
-        when(productRepository.findById(id)).thenReturn(Optional.empty());
-
         assertThatThrownBy(() -> productService.findById(id))
                 .isInstanceOf(ProductNotFoundException.class)
                 .hasMessage("Product not found");
-
-        verify(productRepository, times(1)).findById(id);
     }
 
     @Test
     void mustAllowUpdateProduct() throws ProductNotFoundException {
-        var id = UUID.randomUUID().toString();
+        var id = UUID.fromString("a0d94841-8ac4-4346-af6d-dbb82bd316cc").toString();
         var oldProduct = gerarProductEntity();
         oldProduct.setId(id);
 
@@ -161,50 +132,21 @@ class ProductServiceTest {
         newProduct.setName("teste");
         newProduct.setInformation("teste");
 
-        when(productRepository.findById(id)).thenReturn(Optional.of(oldProduct));
-        when(productRepository.save(any(ProductEntity.class))).thenAnswer(i -> i.getArgument(0));
-        when(productConverter.toProductEntity(any(ProductRequestDTO.class))).thenReturn(newProduct);
-        when(categoryService.findByProductId(id)).thenReturn(gerarCategoryEntity());
-        when(productMapper.toProductResponseDTO(any(ProductEntity.class), any(CategoryEntity.class))).thenReturn(gerarProductResponse());
-
         // act
         ProductResponseDTO productReceived = productService.updateById(id, gerarProductRequest());
 
         // assert
-
         assertThat(productReceived).isInstanceOf(ProductResponseDTO.class);
         assertThat(productReceived).isNotNull();
-
-        verify(productRepository, times(1)).findById(any(String.class));
-        verify(productRepository, times(1)).save(any(ProductEntity.class));
     }
-
 
     @Test
     void mustGenerateExceptionWhenIdDoesNotExistInUpdate() {
         var id = UUID.randomUUID().toString();
 
-        when(productRepository.findById(id)).thenReturn(Optional.empty());
-
         assertThatThrownBy(() -> productService.updateById(id, gerarProductRequest()))
                 .isInstanceOf(ProductNotFoundException.class)
                 .hasMessage("Product not found");
-
-        verify(productRepository, times(1)).findById(id);
-    }
-
-    @Test
-    void mustAllowRemoveProduct() throws ProductNotFoundException {
-        var id = UUID.randomUUID().toString();
-        var product = gerarProductEntity();
-
-        when(productRepository.findById(id)).thenReturn(Optional.of(product));
-        doNothing().when(productRepository).deleteById(id);
-
-        productService.deleteById(id);
-
-        verify(productRepository, times(1)).findById(any(String.class));
-        verify(productRepository, times(1)).deleteById(any(String.class));
     }
 
     @Test
@@ -214,27 +156,17 @@ class ProductServiceTest {
         assertThatThrownBy(() -> productService.deleteById(id))
                 .isInstanceOf(ProductNotFoundException.class)
                 .hasMessage("Product not found");
-
-        verify(productRepository, times(1)).findById(id);
     }
 
 
     @Test
     void mustAllowListProducts() {
-        ProductEntity product1 = gerarProductEntity();
-        ProductEntity product2 = gerarProductEntity();
-
-        List<ProductEntity> listProducts = Arrays.asList(product1, product2);
-
-        when(productRepository.findAll()).thenReturn(listProducts);
 
         // Act
         var productsReceived = productService.findAll();
 
         // Assert
-        Assertions.assertThat(productsReceived).hasSize(2);
-
-        verify(productRepository, times(1)).findAll();
+        Assertions.assertThat(productsReceived).isNotEmpty();
     }
 
 

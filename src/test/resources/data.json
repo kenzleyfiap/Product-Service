@@ -1,0 +1,28 @@
+[{
+  "id": "a0d94841-8ac4-4346-af6d-dbb82bd316cc",
+  "name": "Hambúrguer do papai",
+  "price": 35.0,
+  "information": "amor e ódio",
+  "category": {
+    "name": "Hambúrguers"
+  }
+},
+  {
+    "id": "391c810e-6a66-47a5-8e28-ed101dd578ed",
+    "name": "Hambúrguer",
+    "price": 35.0,
+    "information": "amor e ódio",
+    "category": {
+      "name": "Hambúrguers"
+    }
+  },
+  {
+    "id": "98814168-fbbf-41bb-a85d-697d4ba39449",
+    "name": "Hambúrguer 2",
+    "price": 35.0,
+    "information": "amor e ódio",
+    "category": {
+      "name": "Hambúrguers"
+    }
+  }
+]

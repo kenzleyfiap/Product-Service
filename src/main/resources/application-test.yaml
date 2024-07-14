@@ -1,16 +1,9 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: root
-    password: root
-    driverClassName: org.h2.Driver
-  jpa:
-    database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
-    # Utilizar apenas pra desenvolvimento
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: create-drop
-  h2:
-    console:
-      enabled: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/test
+
+logging:
+  level:
+    root: ERROR
+    org.springframework: ERROR
