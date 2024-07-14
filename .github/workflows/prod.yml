@@ -1,0 +1,12 @@
+name: Deploy Service Product
+
+on:
+    push:
+        branches: [develop]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
