@@ -7,9 +7,6 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        env:
-            HOST_MONGO: ${{secrets.HOST_MONGO}}
-            DATABASE_NAME_MONGO: ${{secrets.DATABASE_NAME_MONGO}}
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
@@ -41,4 +38,4 @@ jobs:
             - name: Pull image from docker hub
               run: docker pull luankenzley/product-service:latest
             - name: Run docker container
-              run: docker run -d -p 8080:8080 --name deploy_product-service luankenzley/product-service
+              run: docker run -d -p 8080:8080  -e HOST_MONGO=${{secrets.HOST_MONGO}} -e DATABASE_NAME_MONGO=${{secrets.DATABASE_NAME_MONGO}} --name deploy_product-service luankenzley/product-service
