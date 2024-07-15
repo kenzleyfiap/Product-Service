@@ -1,9 +1,9 @@
 spring:
   data:
     mongodb:
-      host: localhost
+      host: ${HOST_MONGO}
       port: 27017
-      database: product
+      database: ${DATABASE_NAME_MONGO}
 
 server:
   port: 8081
