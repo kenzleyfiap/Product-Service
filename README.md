@@ -13,8 +13,8 @@ Serviço responsável por operacionalizar os produtos(lanches)
 <b>Testes de integração
 ```
 mvn test -P integration-test
-```)
-<b>Testes de sistema
+```
+Testes de sistema
 ```
 mvn test
 ```
