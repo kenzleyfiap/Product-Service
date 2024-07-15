@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Tag(name = "Order", description = "the Order Api")
+@Tag(name = "Product", description = "the Product Api")
 @RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor
